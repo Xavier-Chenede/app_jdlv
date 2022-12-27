@@ -9,42 +9,65 @@
 
 library(shiny)
 
-# Define UI for application that draws a histogram
+# Define UI for the application
 ui <- fluidPage(
-
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
+        tabsetPanel(
+            tabPanel("Main"),
+            tabPanel("Rules",
+                     h1("Rules of the Conway's game of life'"),
+                     hr(),
+                     h3("Une cellule possède huit voisins, qui sont les cellules adjacentes horizontalement,
+                     verticalement et diagonalement. À chaque itération, l'état d’une cellule est
+                     entièrement déterminé par l’état de ses huit cellules voisines, selon les règles
+                     suivantes :"),
+                     hr(),
+                     h2("rule#1"),
+                     h3("Une cellule vivante possédant deux ou trois cellules voisines vivantes le reste,
+                     sinon elle meurt"),
+                     hr(),
+                     h2("rule#2"),
+                     h3("Une cellule vide possédant exactement trois cellules voisines vivantes devient
+                     vivante (elle naît)")
+                     ),
+            tabPanel("Miscellaneous")
         )
-    )
 )
+             
+             
+             
+#              # Application title
+#     titlePanel("Old Faithful Geyser Data"),
+# 
+#     # Sidebar with a slider input for number of bins 
+#     sidebarLayout(
+#         sidebarPanel(
+#             sliderInput("bins",
+#                         "Number of bins:",
+#                         min = 1,
+#                         max = 50,
+#                         value = 30)
+#         ),
+# 
+#         # Show a plot of the generated distribution
+#         mainPanel(
+#            plotOutput("distPlot")
+#         )
+#     )
+# )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white',
-             xlab = 'Waiting time to next eruption (in mins)',
-             main = 'Histogram of waiting times')
-    })
+    # output$distPlot <- renderPlot({
+    #     # generate bins based on input$bins from ui.R
+    #     x    <- faithful[, 2]
+    #     bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    # 
+    #     # draw the histogram with the specified number of bins
+    #     hist(x, breaks = bins, col = 'darkgray', border = 'white',
+    #          xlab = 'Waiting time to next eruption (in mins)',
+    #          main = 'Histogram of waiting times')
+    # })
 }
 
 # Run the application 
