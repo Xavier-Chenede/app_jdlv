@@ -8,6 +8,11 @@
 #
 
 library(shiny)
+library(readr)
+library(rvest)
+
+github_url <- "https://github.com/Xavier-Chenede/app_jdlv/tree/master/models"
+
 
 # Define UI for the application
 ui <- fluidPage(
@@ -16,6 +21,9 @@ ui <- fluidPage(
                      titlePanel("JEU DE LA VIE"),
                      column(4,
                             wellPanel(
+                                selectInput("File_choice", "Choose a model", choices=NULL),
+                                actionButton("update", "Update file list"),
+                                hr(),
                                 sliderInput("gen",
                                             "Number of generations:",
                                             min = 0,
@@ -28,7 +36,6 @@ ui <- fluidPage(
                                 width=4,
                                 style = "overflow-y:scroll; max-height: 90vh; position:relative;",
                                 plotOutput("evolution")
-                                
                             )
                      ),
                      column(8,
@@ -37,14 +44,12 @@ ui <- fluidPage(
                                 textOutput("lab_gen"),
                                 textOutput("count_alive"),
                                 textOutput("percent_var"),
-                                # style = "overflow-y:scroll; max-height: 10vh; position:relative;", 
                                 plotOutput("gen_grid", height = "800px")
-                                # style = "overflow-y:scroll; max-height: 80vh; position:relative;" 
-                                # style = "height:1000px;background-color: red;"
                             )    
                      )
                      
              ),
+            
             tabPanel("Rules",
                      h1("Rules of the Conway's game of life'"),
                      hr(),
@@ -61,45 +66,34 @@ ui <- fluidPage(
                      h3("Une cellule vide possédant exactement trois cellules voisines vivantes devient
                      vivante (elle naît)")
                      ),
+            
             tabPanel("Miscellaneous")
         )
 )
              
              
              
-#              # Application title
-#     titlePanel("Old Faithful Geyser Data"),
-# 
-#     # Sidebar with a slider input for number of bins 
-#     sidebarLayout(
-#         sidebarPanel(
-#             sliderInput("bins",
-#                         "Number of bins:",
-#                         min = 1,
-#                         max = 50,
-#                         value = 30)
-#         ),
-# 
-#         # Show a plot of the generated distribution
-#         mainPanel(
-#            plotOutput("distPlot")
-#         )
-#     )
-# )
 
-# Define server logic required to draw a histogram
-server <- function(input, output) {
+# Define server 
+server <- function(input, output,session) {
 
-    # output$distPlot <- renderPlot({
-    #     # generate bins based on input$bins from ui.R
-    #     x    <- faithful[, 2]
-    #     bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    # 
-    #     # draw the histogram with the specified number of bins
-    #     hist(x, breaks = bins, col = 'darkgray', border = 'white',
-    #          xlab = 'Waiting time to next eruption (in mins)',
-    #          main = 'Histogram of waiting times')
+    # Lorsque le bouton "update" est cliqué, récupérer la liste des fichiers dans le répertoire et mettre à jour l'objet selectInput
+    observeEvent(input$update, {
+        # Récupérer le contenu du répertoire à l'aide de read_html() et html_nodes()
+        page <- read_html(github_url)
+        files <- html_nodes(page, ".js-navigation-open") %>% html_text()
+        # Mettre à jour l'objet selectInput avec la liste des fichiers
+        updateSelectInput(session, "File_choice", choices = files[5:length(files)])
+    })
+    
+    # output$gen_0 <- renderPlot({
+    #         file <- input$File_choice
+    #         ext  <- tools::file_ext(file$datapath)
+    #         view <- readRDS(file$datapath)
+    #         plot(view, key=NULL, asp=TRUE,axis.col=NULL, axis.row=NULL, xlab='', ylab='')
     # })
+    
+    
 }
 
 # Run the application 
