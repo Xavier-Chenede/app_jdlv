@@ -12,7 +12,39 @@ library(shiny)
 # Define UI for the application
 ui <- fluidPage(
         tabsetPanel(
-            tabPanel("Main"),
+            tabPanel("Main",
+                     titlePanel("JEU DE LA VIE"),
+                     column(4,
+                            wellPanel(
+                                sliderInput("gen",
+                                            "Number of generations:",
+                                            min = 0,
+                                            max = 100,
+                                            value = 0,
+                                            animate=animationOptions(100)
+                                ), 
+                                "Basal config (Generation 0)",
+                                plotOutput("gen_0"),
+                                width=4,
+                                style = "overflow-y:scroll; max-height: 90vh; position:relative;",
+                                plotOutput("evolution")
+                                
+                            )
+                     ),
+                     column(8,
+                            wellPanel( 
+                                
+                                textOutput("lab_gen"),
+                                textOutput("count_alive"),
+                                textOutput("percent_var"),
+                                # style = "overflow-y:scroll; max-height: 10vh; position:relative;", 
+                                plotOutput("gen_grid", height = "800px")
+                                # style = "overflow-y:scroll; max-height: 80vh; position:relative;" 
+                                # style = "height:1000px;background-color: red;"
+                            )    
+                     )
+                     
+             ),
             tabPanel("Rules",
                      h1("Rules of the Conway's game of life'"),
                      hr(),
