@@ -12,7 +12,9 @@
     library(plot.matrix)
     
     
-    
+    # run functions
+    source(('setup_grids.R'), local = TRUE)
+    source(('gen_next.R'), local = TRUE)
     
     # Git location:
     github_url <- "https://github.com/Xavier-Chenede/app_jdlv/tree/master/models"
@@ -57,11 +59,13 @@
                          ),
                          column(8,
                                 wellPanel( 
-                                    
-                                    textOutput("lab_gen"),
+                                    numericInput("lab_gen", label="Generation", value= NULL, width= "100px"),
+                                    actionButton(inputId="Go", label="Launch evolution !"),
+                                    hr(),
                                     textOutput("count_alive"),
                                     textOutput("percent_var"),
-                                    plotOutput("gen_grid", height = "800px")
+                                    plotOutput("gen_grid", height = "800px"),
+
                                 )    
                          )
                          
@@ -88,9 +92,7 @@
             )
     )
                  
-                 
-                 
-    
+
     # Define server 
     server <- function(input, output,session) {
     
@@ -100,7 +102,7 @@
             page <- read_html(github_url)
             files <- html_nodes(page, ".js-navigation-open") %>% html_text()
             # Mettre à jour l'objet selectInput avec la liste des fichiers
-            updateSelectInput(session, "File_choice", choices = files[5:length(files)])
+            updateSelectInput(session, "File_choice", choices = files[6:length(files)])
         })
         
         
@@ -108,17 +110,44 @@
             plot(mX, key=NULL, asp=TRUE,axis.col=NULL, axis.row=NULL, xlab='', ylab='') 
         })
         
+
         # Lorsque l'objet SelectInput est updaté, récupérer fichier et mettre à jour la grille 'generation 0'
-        # observeEvent(input$File_choice, {
-        # 
-        #     output$gen_0 <- renderPlot({
-        #             file <- input$File_choice
-        #             ext  <- tools::file_ext(file$datapath)
-        #             view <- readRDS(file$datapath)
-        #             plot(view, key=NULL, asp=TRUE,axis.col=NULL, axis.row=NULL, xlab='', ylab='')
-        #     })
-        #     
-        # })
+        observeEvent(input$File_choice, {
+            if (input$File_choice != "") {
+                updateNumericInput(session, inputId = "lab_gen", value = 0)
+                
+                data_to_inject_1st <<- setup_matrix(mX)
+                #setup and load the original grid in the right panel
+                output$gen_grid <- renderPlot({
+                    plot(
+                        data_to_inject_1st,
+                        key = NULL,
+                        asp = TRUE,
+                        axis.col = NULL,
+                        axis.row = NULL,
+                        xlab = '',
+                        ylab = ''
+                    )
+                })
+                
+                
+            }
+        })
+        
+        observeEvent(input$Go, {
+            output$gen_grid <- renderPlot({
+                plot(
+                    newgen(data_to_inject_1st),
+                    key = NULL,
+                    asp = TRUE,
+                    axis.col = NULL,
+                    axis.row = NULL,
+                    xlab = '',
+                    ylab = ''
+                )
+            })
+        })
+        
         
     }
     
