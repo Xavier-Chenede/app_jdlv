@@ -21,7 +21,7 @@
     
     
     # Generation 0 Grid (matrix object):
-        #CROSS STRUCTURE
+        ##CROSS STRUCTURE
     mX <- matrix(nrow=8, ncol=8)
     mX[,1] <- c(NA,NA,1,1,1,1,NA,NA)
     mX[,2] <- c(NA,NA,1,NA,NA,1,NA,NA)
@@ -32,6 +32,17 @@
     mX[,7] <- c(NA,NA,1,NA,NA,1,NA,NA)
     mX[,8] <- c(NA,NA,1,1,1,1,NA,NA)
     mX
+        ##Minimal struct to far far away !
+    mini_struct <- matrix(nrow=3, ncol=7)
+    mini_struct[,1] <- c(NA,NA,1)
+    mini_struct[,2] <- c(1,NA,1)
+    mini_struct[,3] <- c(NA,NA,NA)
+    mini_struct[,4] <- c(NA,1,NA)
+    mini_struct[,5] <- c(NA,NA,1)
+    mini_struct[,6] <- c(NA,NA,1)
+    mini_struct[,7] <- c(NA,NA,1)
+    mini_struct 
+    
     
     # Define UI for the application
     ui <- fluidPage(
@@ -59,7 +70,9 @@
                          ),
                          column(8,
                                 wellPanel( 
-                                    numericInput("lab_gen", label="Generation", value= NULL, width= "100px"),
+                                    # numericInput("lab_gen", label="Generation", value= NULL, width= "300px"),
+                                    p(strong(textOutput("lab_gen"))),
+                                    numericInput("nb_gen", label="Number of generation to run", min=1, max=100, value= NULL, width= "300px"),
                                     actionButton(inputId="Go", label="Launch evolution !"),
                                     hr(),
                                     textOutput("count_alive"),
@@ -107,20 +120,21 @@
         
         
         output$gen_0 <- renderPlot({
-            plot(mX, key=NULL, asp=TRUE,axis.col=NULL, axis.row=NULL, xlab='', ylab='') 
+            plot(mini_struct, key=NULL, asp=TRUE,axis.col=NULL, axis.row=NULL, xlab='', ylab='') 
         })
         
 
         # Lorsque l'objet SelectInput est updaté, récupérer fichier et mettre à jour la grille 'generation 0'
         observeEvent(input$File_choice, {
             if (input$File_choice != "") {
-                updateNumericInput(session, inputId = "lab_gen", value = 0)
+                # updateNumericInput(session, inputId = "lab_gen", value = 0)
+                output$lab_gen <- renderText("Generation 0")
+                data_to_inject <<- setup_matrix(mini_struct)
                 
-                data_to_inject_1st <<- setup_matrix(mX)
                 #setup and load the original grid in the right panel
                 output$gen_grid <- renderPlot({
                     plot(
-                        data_to_inject_1st,
+                        data_to_inject,
                         key = NULL,
                         asp = TRUE,
                         axis.col = NULL,
@@ -129,25 +143,30 @@
                         ylab = ''
                     )
                 })
-                
-                
             }
         })
         
         observeEvent(input$Go, {
-            output$gen_grid <- renderPlot({
-                plot(
-                    newgen(data_to_inject_1st),
-                    key = NULL,
-                    asp = TRUE,
-                    axis.col = NULL,
-                    axis.row = NULL,
-                    xlab = '',
-                    ylab = ''
-                )
-            })
+            for (i in 1:1){
+                #run next gen
+                data_to_inject <<- newgen(data_to_inject)
+                # updateNumericInput(session, inputId = "lab_gen", value = input$lab_gen+i)
+                output$gen_grid <- renderPlot({
+                    #plot next gen
+                    plot(
+                        data_to_inject,
+                        key = NULL,
+                        asp = TRUE,
+                        axis.col = NULL,
+                        axis.row = NULL,
+                        xlab = '',
+                        ylab = ''
+                    )
+                })
+            }
+
         })
-        
+  
         
     }
     
