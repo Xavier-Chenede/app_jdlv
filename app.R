@@ -17,6 +17,8 @@
     # run functions
     source(('setup_grids.R'), local = TRUE)
     source(('gen_next.R'), local = TRUE)
+    source(('reduced_mtrx.R'), local = TRUE)
+    
     
     # Git location:
     github_url <- "https://github.com/Xavier-Chenede/app_jdlv/tree/master/models"

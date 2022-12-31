@@ -1,6 +1,5 @@
 #function to remove from the edge of the matrix the empty rows and columns 
 
-
 reduced_mtrx <- function(in_m){
         
         #check the top of the input grid
@@ -32,4 +31,4 @@ reduced_mtrx <- function(in_m){
         }
         in_m
 } 
-
+ 

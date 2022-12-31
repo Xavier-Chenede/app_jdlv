@@ -41,6 +41,7 @@ newgen <- function (gen_to_run) {
                         }
                 }
         }
+        gen_next <- reduced_mtrx(gen_next)
         setup_matrix(gen_next)
 }
 
