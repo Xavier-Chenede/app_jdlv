@@ -10,14 +10,22 @@
     library(readr)
     library(rvest)
     library(plot.matrix)
+    library(glue)
+    library(rsconnect)
     
-    
+
     # run functions
     source(('setup_grids.R'), local = TRUE)
     source(('gen_next.R'), local = TRUE)
     
     # Git location:
     github_url <- "https://github.com/Xavier-Chenede/app_jdlv/tree/master/models"
+    
+    # default value:
+        ## set generation number    
+    g <<- 0
+        ## define the interval of generations you want to display    
+    stp <<- 1
     
     
     # Generation 0 Grid (matrix object):
@@ -71,7 +79,10 @@
                          column(8,
                                 wellPanel( 
                                     # numericInput("lab_gen", label="Generation", value= NULL, width= "300px"),
-                                    p(strong(textOutput("lab_gen"))),
+                                    textOutput("lab_gen"),
+                                        tags$head(tags$style("#lab_gen{color: blue; font-size: 40px; font-style: bold; }")),
+                                    
+                                    
                                     numericInput("nb_gen", label="Number of generation to run", min=1, max=100, value= NULL, width= "300px"),
                                     actionButton(inputId="Go", label="Launch evolution !"),
                                     hr(),
@@ -120,7 +131,7 @@
         
         
         output$gen_0 <- renderPlot({
-            plot(mini_struct, key=NULL, asp=TRUE,axis.col=NULL, axis.row=NULL, xlab='', ylab='') 
+            plot(mini_struct, main = "", key=NULL, asp=TRUE,axis.col=NULL, axis.row=NULL, xlab='', ylab='') 
         })
         
 
@@ -130,11 +141,11 @@
                 # updateNumericInput(session, inputId = "lab_gen", value = 0)
                 output$lab_gen <- renderText("Generation 0")
                 data_to_inject <<- setup_matrix(mini_struct)
-                
                 #setup and load the original grid in the right panel
                 output$gen_grid <- renderPlot({
                     plot(
                         data_to_inject,
+                        main = "",
                         key = NULL,
                         asp = TRUE,
                         axis.col = NULL,
@@ -147,14 +158,17 @@
         })
         
         observeEvent(input$Go, {
-            for (i in 1:1){
+            for (i in 1:stp){
                 #run next gen
                 data_to_inject <<- newgen(data_to_inject)
-                # updateNumericInput(session, inputId = "lab_gen", value = input$lab_gen+i)
+                g <<- g+1 
+                output$lab_gen <- renderText(glue("Generation {g}"))
+                
                 output$gen_grid <- renderPlot({
                     #plot next gen
                     plot(
                         data_to_inject,
+                        main = "",
                         key = NULL,
                         asp = TRUE,
                         axis.col = NULL,
