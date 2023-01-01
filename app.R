@@ -26,8 +26,7 @@
     # default value:
         ## set generation number    
     g <<- 0
-        ## define the interval of generations you want to display    
-    # stp <<- 100
+
    
         ##Minimal struct to far far away !
     mini_struct <- matrix(nrow=3, ncol=7)
@@ -179,4 +178,4 @@
     # Run the application 
     shinyApp(ui = ui, server = server)
     
-
+#test branch 
