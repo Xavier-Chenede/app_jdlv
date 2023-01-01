@@ -27,21 +27,8 @@
         ## set generation number    
     g <<- 0
         ## define the interval of generations you want to display    
-    stp <<- 1
-    
-    
-    # Generation 0 Grid (matrix object):
-        ##CROSS STRUCTURE
-    mX <- matrix(nrow=8, ncol=8)
-    mX[,1] <- c(NA,NA,1,1,1,1,NA,NA)
-    mX[,2] <- c(NA,NA,1,NA,NA,1,NA,NA)
-    mX[,3] <-c(1,1,1,NA,NA,1,1,1)
-    mX[,4] <- c(1,NA,NA,NA,NA,NA,NA,1)
-    mX[,5] <- c(1,NA,NA,NA,NA,NA,NA,1)
-    mX[,6] <-c(1,1,1,NA,NA,1,1,1)
-    mX[,7] <- c(NA,NA,1,NA,NA,1,NA,NA)
-    mX[,8] <- c(NA,NA,1,1,1,1,NA,NA)
-    mX
+    # stp <<- 100
+   
         ##Minimal struct to far far away !
     mini_struct <- matrix(nrow=3, ncol=7)
     mini_struct[,1] <- c(NA,NA,1)
@@ -56,47 +43,50 @@
     
     # Define UI for the application
     ui <- fluidPage(
+      
             tabsetPanel(
-                tabPanel("Main",
-                         titlePanel("JEU DE LA VIE"),
-                         column(4,
-                                wellPanel(
-                                    selectInput("File_choice", "Choose a model", choices=NULL),
-                                    actionButton("update", "Update file list"),
-                                    hr(),
-                                    sliderInput("gen",
-                                                "Number of generations:",
-                                                min = 0,
-                                                max = 100,
-                                                value = 0,
-                                                animate=animationOptions(100)
-                                    ), 
-                                    "Basal configuration (Generation 0)",
-                                    plotOutput("gen_0"),
-                                    width=4,
-                                    style = "overflow-y:scroll; max-height: 90vh; position:relative;",
-                                    plotOutput("evolution")
-                                )
+              
+              tabPanel("Main",
+                       titlePanel("JEU DE LA VIE"),
+                       # Panneau latéral
+                       sidebarLayout(
+                         sidebarPanel(
+                           # Bouton d'entrée
+                           selectInput("File_choice", "Choose a model", choices=NULL),
+                           actionButton("update", "Update file list"),
+                           hr(),
+                           sliderInput("gen",
+                                       "Number of generations:",
+                                       min = 0,
+                                       max = 100,
+                                       value = 0,
+                                       animate=animationOptions(100)
+                           ), 
+                           "Basal configuration (Generation 0)",
+                           plotOutput("gen_0"),
+                           width=4,
+                           #style = "overflow-y:scroll; max-height: 90vh; position:relative;",
+                           plotOutput("evolution")
                          ),
-                         column(8,
-                                wellPanel( 
-                                    # numericInput("lab_gen", label="Generation", value= NULL, width= "300px"),
-                                    textOutput("lab_gen"),
-                                        tags$head(tags$style("#lab_gen{color: blue; font-size: 40px; font-style: bold; }")),
-                                    
-                                    
-                                    numericInput("nb_gen", label="Number of generation to run", min=1, max=100, value= NULL, width= "300px"),
-                                    actionButton(inputId="Go", label="Launch evolution !"),
-                                    hr(),
-                                    textOutput("count_alive"),
-                                    textOutput("percent_var"),
-                                    plotOutput("gen_grid", height = "800px"),
-
-                                )    
-                         )
                          
-                 ),
-                
+                         # Zone de sortie principale
+                         mainPanel(
+                           fluidRow(
+                             textOutput("lab_gen"),
+                             tags$head(tags$style("#lab_gen{color: blue; font-size: 40px; font-style: bold; }")),
+                             numericInput("stp", label="Display 1 generation/n (enter n):", min=1,  value= 1, width= "300px"),
+                             actionButton(inputId="Go", label="Launch evolution!"),
+                             hr(),
+                             textOutput("count_alive"),
+                             textOutput("percent_var"),
+                             # plotOutput("gen_grid"),tags$style(type = "text/css", "gen_grid { height: 100%; width: 100%; }")#revoir ici,
+                             plotOutput("gen_grid",height="1000px",width="1000px"),
+                             # tags$style(type = "text/css", "gen_grid { height: 800px; width: 800px; }")#revoir ici,
+                           )
+                         )
+                       )
+                ),
+
                 tabPanel("Rules",
                          h1("Rules of the Conway's game of life'"),
                          hr(),
@@ -114,8 +104,8 @@
                          vivante (elle naît)")
                          ),
                 
-                tabPanel("Miscellaneous")
-            )
+                tabPanel("Miscellaneous"),
+          )
     )
                  
 
@@ -160,7 +150,7 @@
         })
         
         observeEvent(input$Go, {
-            for (i in 1:stp){
+            for (i in 1:input$stp){
                 #run next gen
                 data_to_inject <<- newgen(data_to_inject)
                 g <<- g+1 
@@ -189,8 +179,4 @@
     # Run the application 
     shinyApp(ui = ui, server = server)
     
-    file <- "https://github.com/Xavier-Chenede/app_jdlv/tree/master/models/canon"
-    ext  <- tools::file_ext(file$datapath)
-    view <- readRDS("https://github.com/Xavier-Chenede/app_jdlv/blob/c90d43c4bb97947d788dec686b6024511b9c19d0/models/canon")
-    view
-    view <- readRDS(file$datapath)
+
