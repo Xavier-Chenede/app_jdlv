@@ -14,9 +14,9 @@ library(glue)
 library(rsconnect)
 
 # run functions
-source(('setup_grids.R'), local = TRUE)
-source(('gen_next.R'), local = TRUE)
-source(('reduced_mtrx.R'), local = TRUE)
+source(('setup_grids_v2.0.R'), local = TRUE)
+source(('gen_next_v2.0.R'), local = TRUE)
+source(('reduced_mtrx_v2.0.R'), local = TRUE)
 
 # Git location:
 github_url <- "https://github.com/Xavier-Chenede/app_jdlv/tree/master/models"
@@ -27,15 +27,16 @@ g <<- 0
 
 ##Minimal struct to far far away !
 mini_struct <- matrix(nrow=3, ncol=7)
-mini_struct[,1] <- c(NA,NA,1)
-mini_struct[,2] <- c(1,NA,1)
-mini_struct[,3] <- c(NA,NA,NA)
-mini_struct[,4] <- c(NA,1,NA)
-mini_struct[,5] <- c(NA,NA,1)
-mini_struct[,6] <- c(NA,NA,1)
-mini_struct[,7] <- c(NA,NA,1)
-mini_struct 
+mini_struct[,1] <- c(0,0,1)
+mini_struct[,2] <- c(1,0,1)
+mini_struct[,3] <- c(0,0,0)
+mini_struct[,4] <- c(0,1,0)
+mini_struct[,5] <- c(0,0,1)
+mini_struct[,6] <- c(0,0,1)
+mini_struct[,7] <- c(0,0,1)
 
+
+Struc_in <-mini_struct  
 
 # Define UI for the application
 ui <- fluidPage(
@@ -121,13 +122,14 @@ server <- function(input, output, session) {
       })
       
       output$gen_0 <- renderPlot({
-        plot(mini_struct, main = "", key=NULL, asp=TRUE,axis.col=NULL, axis.row=NULL, xlab='', ylab='') 
+        plot(Struc_in, main = "", key=NULL, asp=TRUE,axis.col=NULL, axis.row=NULL, xlab='', ylab='') 
       })
       
       # Lorsque l'objet SelectInput est updaté, récupérer fichier et préparation de la grille 'generation 0'
       observeEvent(input$File_choice, {
         if (input$File_choice != "") {
-          data_to_inject <<- setup_matrix(mini_struct)
+          data_to_inject <- reduced_mtrx(Struc_in)
+          data_to_inject <<- setup_matrix(Struc_in)
         }
       })
     
@@ -170,7 +172,7 @@ server <- function(input, output, session) {
       observeEvent(input$rst, {
         output$lab_gen  <- renderText ("")
         g<<-0
-        data_to_inject <<- setup_matrix(mini_struct)
+        data_to_inject <<- setup_matrix(Struc_in)
         rv$i <- 0
         updateActionButton(inputId="Go",label = "Launch evolution!")
       }) 
