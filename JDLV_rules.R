@@ -21,8 +21,8 @@ mini_struct <- reduced_mtrx(mini_struct)
 mini_struct <- setup_matrix(mini_struct)
 
 # Struc_in <- mini_struct
-# Struc_in <- m3
-Struc_in <- w
+Struc_in <- m3
+
 
 
 
@@ -58,8 +58,8 @@ newgen <- function (data_in) {
         }
         
         #create a list 'l' of the matrix coordinates for which the algorithm has to be applied
-        nb_c <- ncol(Struc_in)
-        nb_r <- nrow(Struc_in)
+        nb_c <- ncol(data_in)
+        nb_r <- nrow(data_in)
         coord_r <- rep(2:(nb_r-1), each=(nb_c-2))
         coord_c <- rep(2:(nb_c-1), times=(nb_r-2))
         bas_list <- as.list(c(1:((nb_c-2)*(nb_r-2))))
@@ -83,8 +83,6 @@ newgen <- function (data_in) {
         #apply rules function to all positions of the matrix
         lapply(l,rules)
         data_out <- reduced_mtrx(data_out)
-        h <- setup_matrix(data_out)
-        
         setup_matrix(data_out)
         
 
@@ -94,6 +92,11 @@ Struc_in
 ng <- newgen(Struc_in)
 ng
 plot(ng)
+
+ng2 <- newgen(ng)
+ng2
+plot(ng2)
+
 plot(Struc_in)
 plot(w)
 y <- newgen(w)

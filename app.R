@@ -35,7 +35,7 @@ mini_struct[,5] <- c(0,0,1)
 mini_struct[,6] <- c(0,0,1)
 mini_struct[,7] <- c(0,0,1)
 
-
+ 
 Struc_in <-mini_struct  
 
 # Define UI for the application
