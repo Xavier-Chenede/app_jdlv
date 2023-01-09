@@ -37,14 +37,14 @@ mini_struct[,7] <- c(0,0,1)
 
 #Random structure !
 size <- 8
-val <- c(1,1,1,1)
+val <- c(1)
 inp <-  sample(x = val, replace = TRUE, size = size*size)
-rand_mat <- matrix(inp,nrow=size,ncol=size)
-
+rand_mat1 <- matrix(inp,nrow=size,ncol=size)
+plot(rand_mat1)
 
 
  
-Struc_in <-mini_struct  
+Struc_in <- rand_mat1
 
 # Define UI for the application
 ui <- fluidPage(
@@ -159,7 +159,7 @@ server <- function(input, output, session) {
                 axis.row = NULL,
                 xlab = '',
                 ylab = '',
-                col=c('black','blue')
+                col=col_mat
               )
               updateActionButton(inputId="Go",label = "Continue evolution!")
           
@@ -189,13 +189,7 @@ server <- function(input, output, session) {
       }) 
       
       
-      #management when all matrix valuie are NULL
-      
-      # rvs <- reactiveValues(s = 0)
-      
    
-      
-      
 }
 
 

@@ -41,13 +41,21 @@ newgen <- function (data_in) {
         bas_list <- as.list(c(1:((nb_c-2)*(nb_r-2))))
         l <- lapply(bas_list, function(rc) c(coord_r[rc],coord_c[rc])) 
         
-        
-        
         #apply rules function to all positions of the matrix
         lapply(l,rules)
-        data_out <- reduced_mtrx(data_out)
-        setup_matrix(data_out)
+        
+        if (sum(data_out)==0){
+                        col_mat <<- "black"
+                        data_out
+        }  else {
+                data_out <- reduced_mtrx(data_out)
+                col_mat <<- c("black","red")
+                setup_matrix(data_out)
+                }
+        # data_out <- reduced_mtrx(data_out)
+        # setup_matrix(data_out)
         
         
 }
+
 
