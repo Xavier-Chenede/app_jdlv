@@ -4,7 +4,7 @@
 # Find out more about building applications with Shiny here:
 #
 #    http://shiny.rstudio.com/
-#
+
 
 library(shiny)
 library(readr)
@@ -34,6 +34,14 @@ mini_struct[,4] <- c(0,1,0)
 mini_struct[,5] <- c(0,0,1)
 mini_struct[,6] <- c(0,0,1)
 mini_struct[,7] <- c(0,0,1)
+
+#Random structure !
+size <- 8
+val <- c(1,1,1,1)
+inp <-  sample(x = val, replace = TRUE, size = size*size)
+rand_mat <- matrix(inp,nrow=size,ncol=size)
+
+
 
  
 Struc_in <-mini_struct  
@@ -94,7 +102,7 @@ ui <- fluidPage(
     tabPanel("Rules",
              h1("Rules of the Conway's game of life'"),
              hr(),
-             h3("Une cellule possède huit voisins, qui sont les cellules adjacentes horizontalement,
+             h3("Une cellule possède huit voisines, qui sont les cellules adjacentes horizontalement,
                          verticalement et diagonalement. À chaque itération, l'état d’une cellule est
                          entièrement déterminé par l’état de ses huit cellules voisines, selon les règles
                          suivantes :"),
@@ -122,7 +130,7 @@ server <- function(input, output, session) {
       })
       
       output$gen_0 <- renderPlot({
-        plot(Struc_in, main = "", key=NULL, asp=TRUE,axis.col=NULL, axis.row=NULL, xlab='', ylab='') 
+        plot(Struc_in, main = "", key=NULL, asp=TRUE,axis.col=NULL, axis.row=NULL, xlab='', ylab='', col=c('black','red')) 
       })
       
       # Lorsque l'objet SelectInput est updaté, récupérer fichier et préparation de la grille 'generation 0'
@@ -139,19 +147,22 @@ server <- function(input, output, session) {
         if(rv$i > 0) {
           g <<- g+1 
           output$lab_gen <- renderText(glue("Generation {g}"))
-          data_to_inject <<- newgen(data_to_inject)
-          #plot next gen
-          plot(
-            data_to_inject,
-            main = "",
-            key = NULL,
-            asp = TRUE,
-            axis.col = NULL,
-            axis.row = NULL,
-            xlab = '',
-            ylab = ''
-          )
-          updateActionButton(inputId="Go",label = "Continue evolution!")
+          
+              data_to_inject <<- newgen(data_to_inject)
+              #plot next gen
+              plot(
+                data_to_inject,
+                main = "",
+                key = NULL,
+                asp = TRUE,
+                axis.col = NULL,
+                axis.row = NULL,
+                xlab = '',
+                ylab = '',
+                col=c('black','blue')
+              )
+              updateActionButton(inputId="Go",label = "Continue evolution!")
+          
         } 
       })
       
@@ -168,7 +179,7 @@ server <- function(input, output, session) {
         })
       })
       
-      
+      #management of reset button
       observeEvent(input$rst, {
         output$lab_gen  <- renderText ("")
         g<<-0
@@ -176,6 +187,14 @@ server <- function(input, output, session) {
         rv$i <- 0
         updateActionButton(inputId="Go",label = "Launch evolution!")
       }) 
+      
+      
+      #management when all matrix valuie are NULL
+      
+      # rvs <- reactiveValues(s = 0)
+      
+   
+      
       
 }
 
