@@ -12,6 +12,9 @@ library(rvest)
 library(plot.matrix)
 library(glue)
 library(rsconnect)
+library(ggplot2)
+
+
 
 # run functions
 source(('setup_grids_v2.0.R'), local = TRUE)
@@ -44,7 +47,8 @@ plot(rand_mat1)
 
 
  
-Struc_in <- rand_mat1
+Struc_in <- mini_struct
+nb_G0 <- sum(mini_struct)
 
 # Define UI for the application
 ui <- fluidPage(
@@ -64,13 +68,12 @@ ui <- fluidPage(
                    plotOutput("gen_0"),
                    width=4,
                    #style = "overflow-y:scroll; max-height: 90vh; position:relative;",
-                   plotOutput("evolution"),
-                   hr(),
                    h1("Statistics"),
                    h2("Count living cells"),
                    textOutput("count_alive"),
-                   tags$head(tags$style("#count_alive{color: red; font-size: 40px; font-style: bold; }"))
-                   # plotOutput("evolution")
+                   tags$head(tags$style("#count_alive{color: red; font-size: 40px; font-style: bold; }")),
+                   plotOutput("evolution"),
+                   textOutput("Check")
                    
                ),
                
@@ -87,7 +90,6 @@ ui <- fluidPage(
                          numericInput("nbgen", label="Enter the number of generations to run:", min=1,  value= 10, width= "300px"),
                          numericInput("speed", label="Enter refresh delay in ms:", min=1,  value= 100, width= "300px")
                          
-                         # textOutput("count_alive"),
                          # textOutput("percent_var")
                      ),
                      
@@ -149,30 +151,35 @@ server <- function(input, output, session) {
       })
     
       rv <- reactiveValues(i = 0)
-      # evol <- NULL
-      # gnr <-  NULL
+      evol <- data.frame()
+      my_y <- c()
+      my_x <- c()
       output$gen_grid <- renderPlot( {
         if(rv$i > 0) {
           g <<- g+1 
           output$lab_gen <- renderText(glue("Generation {g}"))
           output$count_alive <- renderText({sum(data_to_inject)})
+          my_x <<- c(my_x,g)
+          my_y <<- c(my_y,((sum(data_to_inject)*100/nb_G0)-100))
           
           # *********************
           
           # gnr <- c(gnr,length(gnr)+1)
-          # evol <- dataframe(x= gnr, y = c(evol,output$count_alive))
-          # 
-          # 
-          # output$evolution <- renderPlot({
-          #   ggplot(evol,(aes(gnr,evol)))+
-          #     geom_area(show.legend = FALSE,na.rm = TRUE,colour="red")+
-          #     scale_x_continuous(name = "Generations")+
-          #     scale_y_continuous(name = "Evolution")+
-          #     geom_hline(yintercept=c(-100,0,100))+
-          #     theme_bw()+
-          #     theme(axis.ticks = element_blank(), text=element_text(size=20) )
-          #   
-          # }) 
+          # evol <- data.frame(x= gnr, y = c(evol,sum(data_to_inject)))
+          
+          evol <- data.frame(x= my_x, y = my_y)
+
+          output$evolution <- renderPlot({
+            ggplot(evol,(aes(my_x,my_y)))+
+              geom_area(show.legend = FALSE,na.rm = TRUE,colour="red")+
+              scale_x_continuous(name = "Generations")+
+              scale_y_continuous(name = "Evolution from G0 (%)")+
+              geom_hline(yintercept=c(-100,0,100))+
+              theme_bw()+
+              theme(axis.ticks = element_blank(), text=element_text(size=20) )
+            # plot(my_y)
+            
+          })
           # *********************
           
           
@@ -213,6 +220,8 @@ server <- function(input, output, session) {
         output$lab_gen  <- renderText ("")
         g<<-0
         data_to_inject <<- setup_matrix(Struc_in)
+        my_y <<- c()
+        my_x <<- c()
         rv$i <- 0
         updateActionButton(inputId="Go",label = "Launch evolution!")
       }) 
