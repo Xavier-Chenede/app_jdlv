@@ -36,7 +36,7 @@ mini_struct[,6] <- c(0,0,1)
 mini_struct[,7] <- c(0,0,1)
 
 #Random structure !
-size <- 8
+size <- 25
 val <- c(1)
 inp <-  sample(x = val, replace = TRUE, size = size*size)
 rand_mat1 <- matrix(inp,nrow=size,ncol=size)
@@ -64,7 +64,14 @@ ui <- fluidPage(
                    plotOutput("gen_0"),
                    width=4,
                    #style = "overflow-y:scroll; max-height: 90vh; position:relative;",
-                   plotOutput("evolution")
+                   plotOutput("evolution"),
+                   hr(),
+                   h1("Statistics"),
+                   h2("Count living cells"),
+                   textOutput("count_alive"),
+                   tags$head(tags$style("#count_alive{color: red; font-size: 40px; font-style: bold; }"))
+                   # plotOutput("evolution")
+                   
                ),
                
                # Zone de sortie principale
@@ -142,11 +149,33 @@ server <- function(input, output, session) {
       })
     
       rv <- reactiveValues(i = 0)
-
+      # evol <- NULL
+      # gnr <-  NULL
       output$gen_grid <- renderPlot( {
         if(rv$i > 0) {
           g <<- g+1 
           output$lab_gen <- renderText(glue("Generation {g}"))
+          output$count_alive <- renderText({sum(data_to_inject)})
+          
+          # *********************
+          
+          # gnr <- c(gnr,length(gnr)+1)
+          # evol <- dataframe(x= gnr, y = c(evol,output$count_alive))
+          # 
+          # 
+          # output$evolution <- renderPlot({
+          #   ggplot(evol,(aes(gnr,evol)))+
+          #     geom_area(show.legend = FALSE,na.rm = TRUE,colour="red")+
+          #     scale_x_continuous(name = "Generations")+
+          #     scale_y_continuous(name = "Evolution")+
+          #     geom_hline(yintercept=c(-100,0,100))+
+          #     theme_bw()+
+          #     theme(axis.ticks = element_blank(), text=element_text(size=20) )
+          #   
+          # }) 
+          # *********************
+          
+          
           
               data_to_inject <<- newgen(data_to_inject)
               #plot next gen
@@ -187,6 +216,8 @@ server <- function(input, output, session) {
         rv$i <- 0
         updateActionButton(inputId="Go",label = "Launch evolution!")
       }) 
+      
+    
       
       
    

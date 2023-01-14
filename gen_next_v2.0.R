@@ -52,8 +52,7 @@ newgen <- function (data_in) {
                 col_mat <<- c("black","red")
                 setup_matrix(data_out)
                 }
-        # data_out <- reduced_mtrx(data_out)
-        # setup_matrix(data_out)
+
         
         
 }
